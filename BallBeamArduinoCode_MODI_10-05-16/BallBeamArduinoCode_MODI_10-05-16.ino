@@ -6,7 +6,7 @@ const int servoPin = 11;
 const int triggerPin = 7;                                             
 const int echoPin = 8;                                                
 const int massimaDistanza = 30;  
-float Kp = 2.5;                                                    //Initial Proportional Gain
+float Kp = 2;                                                    //Initial Proportional Gain
 float Ki = 0;                                                      //Initial Integral Gain
 float Kd = 1.1;                                                    //Intitial Derivative Gain
 double Setpoint, Input, Output, ServoOutput;

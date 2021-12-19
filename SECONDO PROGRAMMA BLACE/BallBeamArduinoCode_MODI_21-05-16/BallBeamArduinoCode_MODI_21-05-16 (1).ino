@@ -6,12 +6,14 @@ const int servoPin = 11;
 const int triggerPin = 7;                                             
 const int echoPin = 8;                                                
 const int massimaDistanza = 30;  
-float Kp = 2;                                                    //Initial Proportional Gain
+float Kp = 2.5;                                                    //Initial Proportional Gain
 float Ki = 0;                                                      //Initial Integral Gain
 float Kd = 1.1;                                                    //Intitial Derivative Gain
 double Setpoint, Input, Output, ServoOutput;
+unsigned int uS = 0;
 NewPing sonar(triggerPin, echoPin, massimaDistanza);                                       
-PID myPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);           //Initialize PID object, which is in the class PID.
+PID myPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);//Initialize PID object, which is in the class PID.
+
 void setup() {
  Serial.begin(9600);                                                 //comunicazione seriale 
   myServo.attach(servoPin);                                          //pin del servomotore
@@ -28,12 +30,18 @@ void loop(){
   myServo.write(ServoOutput);                                        //Writes value of Output to servo
 } 
 float readPosition() {
-  delay(36);                                                            //Don't set too low or echos will run into eachother.      
-  unsigned int uS = sonar.ping_median(4);                               //ping_median() function is in class NewPing. It is a digital filter that takes the 
-                                                                        //  the average of 4 (in this case) pings and returns that distance value. This helps 
+  delay(36);                                        //Don't set too low or echos will run into eachother.   
+  unsigned int OLDuS = uS;    
+  uS = sonar.ping_median(4);                               //ping_median() function is in class NewPing. It is a digital filter that takes the 
+                                                                    //  the average of 4 (in this case) pings and returns that distance value. This helps 
                                                                         //  to filter out the pesy noise in those $5.00 UltraSonic Sensors. You know which
                                                                         //  ones I am talking about....
-  return uS / US_ROUNDTRIP_CM;                                          //Returns distance value.
+  //return uS / US_ROUNDTRIP_CM;                                          //Returns distance value.
+  uS = uS / US_ROUNDTRIP_CM;
+  if (uS > massimaDistanza) {
+    uS = OLDuS;
+  }
+ return uS;
 }
 
 
